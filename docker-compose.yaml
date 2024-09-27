@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+# database
+  db:
+    image: 7_database
+    container_name: database
+    environment:
+      POSTGRES_DB: docker_app_db
+      POSTGRES_USER: docker_app
+      POSTGRES_PASSWORD: docker_app
+    volumes:
+      - todo_db:/var/lib/postgresql/data
+    networks:
+      - todo_net
+
+# backend
+  backend:
+    image: 7_back
+    container_name: backend
+    environment:
+      HOST: database
+      PORT: 5432
+      DB: docker_app_db
+      DB_USERNAME: docker_app
+      DB_PASSWORD: docker_app
+    networks:
+      - todo_net
+
+# frontend
+  nginx:
+    image: 7_nginx
+    container_name: frontend
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - todo_net
+
+volumes:
+  todo_db:
+    name: todo_db
+
+networks:
+  todo_net:
+    name: todo_net
